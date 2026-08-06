@@ -6900,15 +6900,15 @@
         <!-- HEADER -->
         <header class="app-header">
             <div class="app-title">
-                <i class="ri-quill-pen-line"></i>
-                <span>创世回廊</span>
+                <i class="ri-sword-line"></i>
+                <span>Fate/Stay Night · 圣杯战争</span>
             </div>
             <div
                 style="display:flex; align-items:center; gap:15px; margin-left:auto; flex-wrap:wrap; justify-content:flex-end;">
                 <button v-if="presetMode === null && presetSubPage" @click="presetSubPage = false" class="preset-btn">
                     <i class="ri-arrow-left-line"></i> 返回
                 </button>
-                <div style="display:flex; align-items:center; gap:15px;" v-show="presetMode !== null">
+                <div style="display:flex; align-items:center; gap:15px;" v-show="presetMode !== null" v-if="!isFateWorldview">
                     <!-- 预设管理按钮 -->
                     <button @click="showPresetModal = true" class="preset-btn">
                         <i class="ri-bookmark-line"></i> 管理预设
@@ -7142,12 +7142,12 @@
                                         <div class="preset-char-name">自定义角色</div>
                                         <div class="preset-char-tag">自由创建 · 无限可能</div>
                                         <div class="preset-char-desc">
-                                            自由选择种族、职业、出身背景和特质，打造完全属于你的冒险者。从十六种族中挑选血脉，在数十种职业中找到你的战斗风格，书写独一无二的传奇。
+                                            选择御主或从者的身份，在冬木市圣杯战争中缔结契约。七职阶英灵、魔术回路与宝具皆可自由设定，书写属于你的命运之夜。
                                         </div>
                                     </div>
                                 </div>
-                                <!-- 预设角色入口 -->
-                                <div class="preset-char-card card-preset" @click="presetSubPage = true">
+                                <!-- 预设角色入口（FATE 卡隐藏：无 DNF 创意工坊） -->
+                                <div v-if="!isFateWorldview" class="preset-char-card card-preset" @click="presetSubPage = true">
                                     <div class="custom-card-icon"
                                         style="background:linear-gradient(135deg, #2d3436 0%, #636e72 100%);">
                                         <i class="ri-store-2-line" style="color:rgba(255,255,255,0.7);"></i>
