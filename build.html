@@ -7166,7 +7166,7 @@
                     </template>
 
                     <!-- STEP 1: WORLDVIEW -->
-                    <template v-else-if="currentStep === 1">
+                    <template v-else-if="stepView === 1">
                         <h2 style="margin-bottom:20px; font-family:var(--font-main);">世界观选择</h2>
 
                         <div class="card-grid"
@@ -7199,7 +7199,7 @@
                     </template>
 
                     <!-- STEP 2: BASIC INFO -->
-                    <template v-else-if="currentStep === 2">
+                    <template v-else-if="stepView === 2">
                         <h2 style="margin-bottom:20px; font-family:var(--font-main);">基础信息设定</h2>
 
                         <!-- 基本信息卡片 - 横向紧凑布局 -->
@@ -7504,7 +7504,7 @@
                                 </div>
 
                                 <!-- 属性分配 - 紧凑版 -->
-                                <div
+                                <div v-if="!isFateWorldview"
                                     style="background:white; border-radius:12px; padding:12px; box-shadow:var(--shadow-card);">
                                     <div
                                         style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:6px;">
@@ -7676,7 +7676,7 @@
                                 </div>
 
                                 <!-- 属性分配 - 27点购点法（与自定义完全一致） -->
-                                <div
+                                <div v-if="!isFateWorldview"
                                     style="background:white; border-radius:12px; padding:12px; box-shadow:var(--shadow-card);">
                                     <div
                                         style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:6px;">
@@ -8222,11 +8222,63 @@
                                 </template>
                             </div>
                         </div>
+                            <!-- FATE 剧本与开局场景（精简模式专属） -->
+                            <template v-if="isFateWorldview">
+                                <div style="margin-top:18px; padding-top:16px; border-top:1px dashed rgba(0,0,0,0.08);">
+                                    <label class="form-label" style="margin-bottom:8px; display:block;">选择剧本时间线</label>
+                                    <div style="font-size:0.8rem; color:var(--secondary); margin-bottom:10px;">
+                                        决定故事走向与时间线（对应世界书「时间线」条目自动切换）
+                                    </div>
+                                    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:6px; margin-bottom:16px;">
+                                        <div v-for="s in FATE_SCRIPT_OPTIONS" :key="s.id" @click="fateScript = s.id"
+                                            class="compact-card" :class="{ selected: fateScript === s.id }"
+                                            style="flex-direction:column; align-items:flex-start; height:auto; padding:10px 12px; gap:3px;">
+                                            <span style="font-size:0.85rem; font-weight:600;">{{ s.name }}</span>
+                                            <span style="font-size:0.7rem; color:var(--secondary); line-height:1.4;">{{ s.desc }}</span>
+                                        </div>
+                                    </div>
+                                    <label class="form-label" style="margin-bottom:8px; display:block;">选择开局场景</label>
+                                    <div style="font-size:0.8rem; color:var(--secondary); margin-bottom:12px;">
+                                        圣杯战争已锁定 FATE 世界观，选择你的开局方式
+                                    </div>
+                                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:8px; margin-bottom:20px;">
+                                        <div v-for="opt in openingOptionsForWorldview" :key="opt.id"
+                                            @click="selectedOpening = opt.id" class="compact-card"
+                                            :class="{ selected: selectedOpening === opt.id }"
+                                            style="flex-direction:column; height:auto; padding:12px 10px; gap:4px;">
+                                            <i :class="opt.icon" style="font-size:1.2rem;"></i>
+                                            <span style="font-size:0.85rem;">{{ opt.name }}</span>
+                                        </div>
+                                        <div v-if="openingOptionsForWorldview.length === 0"
+                                            style="grid-column:1 / -1; padding:12px 14px; border-radius:10px; background:#f8f9fa; color:var(--secondary); font-size:0.85rem;">
+                                            该世界观暂未配置开局场景。
+                                        </div>
+                                    </div>
+                                    <div v-if="selectedOpening"
+                                        style="background:#f8f9fa; border-radius:12px; padding:20px 24px; margin-bottom:20px; font-size:0.92rem; color:var(--primary); line-height:2; max-height:450px; overflow-y:auto;">
+                                        <template v-if="isCustomOpeningSelected">
+                                            <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:8px;">自定义开局场景
+                                                <span style="color:#999; font-weight:400;">{{ customOpeningText.length }}/500</span></label>
+                                            <textarea v-model="customOpeningText" maxlength="500" placeholder="描述你想要的开局场景..."
+                                                style="width:100%; padding:10px; border:1px solid #e0e0e0; border-radius:8px; font-size:0.85rem; outline:none; resize:vertical; min-height:80px; font-family:inherit; line-height:1.6;"
+                                                @focus="$event.target.style.borderColor='var(--accent)'"
+                                                @blur="$event.target.style.borderColor='#e0e0e0'"></textarea>
+                                        </template>
+                                        <template v-else-if="selectedOpeningInfo">
+                                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px; font-weight:700; font-size:1rem; color:var(--accent); padding-bottom:12px; border-bottom:2px solid rgba(45, 106, 79, 0.15);">
+                                                <i :class="selectedOpeningInfo.icon" style="font-size:1.4rem;"></i>
+                                                <div>{{ selectedOpeningInfo.name }}</div>
+                                            </div>
+                                            <div style="color:#2d3436; white-space:pre-line;">{{ selectedOpeningInfo.desc || openingTexts[selectedOpening] || '' }}</div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
                     </template>
 
                     <!-- STEP 3: CLASS & SKILLS -->
                     <!-- STEP 3: CLASS & SKILLS (SPLIT VIEW) -->
-                    <template v-else-if="currentStep === 3">
+                    <template v-else-if="stepView === 3">
                         <h2 style="margin-bottom:15px; font-family:var(--font-main);">职业选择</h2>
 
                         <!-- 预设角色 - 使用自定义职业表单（预填锁定） -->
@@ -8588,7 +8640,7 @@
                     </template>
 
                     <!-- STEP 4: BACKGROUND & TRAITS -->
-                    <template v-else-if="currentStep === 4">
+                    <template v-else-if="stepView === 4">
                         <h2 style="margin-bottom:25px; font-family:var(--font-main);">背景与特质 / 专长</h2>
 
                         <!-- 预设角色锁定出身 -->
@@ -9280,7 +9332,7 @@
                     </template><!-- /Step 3 -->
 
                     <!-- STEP 5: TEAMMATES -->
-                    <template v-else-if="currentStep === 5">
+                    <template v-else-if="stepView === 5">
                         <h2 style="margin-bottom:25px; font-family:var(--font-main);">初始羁绊</h2>
 
                         <h3 style="margin: 0 0 15px;">选择初始羁绊</h3>
@@ -9707,7 +9759,7 @@
                     </template>
 
                     <!-- STEP 6: BUILD REVIEW -->
-                    <template v-else-if="currentStep === 6">
+                    <template v-else-if="stepView === 6">
                         <div class="build-review-page">
                             <div class="build-review-intro">
                                 <i class="ri-scales-3-line"></i>
@@ -9825,7 +9877,7 @@
                         </div>
                     </template>
                     <!-- STEP 7: SUMMARY -->
-                    <template v-else-if="currentStep === 7">
+                    <template v-else-if="stepView === 7">
                         <div class="summary-panel">
                             <div class="summary-avatar"
                                 :style="{background: isPresetChar ? '#8B2020' : (currentRace?.tierColor || '#dfe6e9')}">
@@ -9854,8 +9906,25 @@
                                         class="ri-map-pin-line"></i> {{ summarySpawnName }}</span>
                             </div>
 
+                            <!-- FATE 确认摘要 -->
+                            <div v-if="isFateWorldview"
+                                style="text-align:left; background:linear-gradient(135deg, rgba(139,32,32,0.05) 0%, rgba(139,32,32,0.10) 100%); padding:18px 20px; border-radius:12px; margin-bottom:20px; border:1px solid rgba(139,32,32,0.2);">
+                                <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+                                    <i class="ri-sword-line" style="color:#8B2020; font-size:1rem;"></i>
+                                    <span style="font-weight:700; font-size:0.95rem; color:#8B2020;">圣杯战争参战确认</span>
+                                </div>
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px 16px; font-size:0.88rem; line-height:1.8;">
+                                    <div><span style="color:var(--secondary);">身份</span>：<strong>{{ isFateWorldview ? (String(character.race || '').startsWith('从者') ? '从者' : (['普通人类','魔术师','人造人','吸血鬼','死徒'].includes(character.race) ? '御主' : '自创')) : '-' }}</strong></div>
+                                    <div><span style="color:var(--secondary);">职阶</span>：<strong>{{ String(character.race || '').startsWith('从者') ? 'Saber（可按英灵设定调整）' : '无' }}</strong></div>
+                                    <div><span style="color:var(--secondary);">剧本</span>：<strong>{{ (FATE_SCRIPT_OPTIONS.find(o => o.id === fateScript) || {}).name || 'FSN 混合线' }}</strong></div>
+                                    <div><span style="color:var(--secondary);">届数</span>：<strong>{{ (fateScript === 'FZ-上' || fateScript === 'FZ-下') ? '第四次圣杯战争' : '第五次圣杯战争' }}</strong></div>
+                                    <div><span style="color:var(--secondary);">出生点</span>：<strong>{{ selectedSpawnPoint.value || '卫宫邸' }}</strong></div>
+                                    <div><span style="color:var(--secondary);">开局</span>：<strong>{{ selectedOpeningInfo?.name || '冬木市的日常' }}</strong></div>
+                                </div>
+                            </div>
+
                             <!-- 战斗数值与难度：放在最终确认，避免打断构筑评议 -->
-                            <div class="summary-setting-card" style="margin:0 0 20px;">
+                            <div v-if="!isFateWorldview" class="summary-setting-card" style="margin:0 0 20px;">
                                 <div class="summary-setting-header">
                                     <h4 class="summary-setting-title">
                                         <i class="ri-sword-line"></i>
@@ -9936,7 +10005,7 @@
                                 </div>
                             </div>
 
-                            <div class="stat-grid-mini">
+                            <div v-if="!isFateWorldview" class="stat-grid-mini">
                                 <div class="mini-stat" v-for="(val, key) in character.attributes">
                                     <div class="mini-stat-label">{{ getAttributeLabel(key).substring(0,2) }}</div>
                                     <div class="mini-stat-val"
@@ -9946,7 +10015,7 @@
                                 </div>
                             </div>
 
-                            <div
+                            <div v-if="!isFateWorldview"
                                 style="text-align:left; background:#f8f9fa; padding:20px; border-radius:12px; margin-bottom:20px; margin-top:20px;">
                                 <h4 style="margin-bottom:10px;">初始物资</h4>
                                 <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
@@ -9973,7 +10042,7 @@
                                 </div>
                             </div>
 
-                            <div
+                            <div v-if="!isFateWorldview"
                                 style="text-align:left; background:#f8f9fa; padding:20px; border-radius:12px; margin-bottom:20px;">
                                 <h4 style="margin-bottom:10px;">技能</h4>
                                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
@@ -9988,7 +10057,7 @@
                                 </div>
                             </div>
 
-                            <div style="text-align:left; background:#f8f9fa; padding:20px; border-radius:12px;">
+                            <div v-if="!isFateWorldview" style="text-align:left; background:#f8f9fa; padding:20px; border-radius:12px;">
                                 <h4 style="margin-bottom:10px;">队伍</h4>
                                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
                                     <span v-for="t in character.teammates"
@@ -10102,7 +10171,7 @@
                             </div>
 
                             <!-- 地图世界书开关 -->
-                            <div v-if="showMapWorldbookOption"
+                            <div v-if="showMapWorldbookOption && !isFateWorldview"
                                 style="text-align:left; background:#f8f9fa; padding:20px; border-radius:12px; margin-top:15px; border:1px solid rgba(0,0,0,0.05);">
                                 <div
                                     style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
@@ -10139,11 +10208,11 @@
                                 </p>
                             </div>
 
-                            <div v-if="buildReviewResult" style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:15px; padding:12px 15px; border-radius:10px; background:rgba(45,106,79,0.06); border:1px solid rgba(45,106,79,0.12); text-align:left;">
+                            <div v-if="buildReviewResult && !isFateWorldview" style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:15px; padding:12px 15px; border-radius:10px; background:rgba(45,106,79,0.06); border:1px solid rgba(45,106,79,0.12); text-align:left;">
                                 <div><div style="font-size:0.72rem; color:var(--secondary);">构筑共鸣评议</div><div style="font-size:0.86rem; font-weight:700; margin-top:2px;">{{ buildReviewResult.总分 }}/100 · {{ buildReviewResult.结论 }}<span v-if="buildReviewStale" style="color:#b06c32;">（构筑已变化）</span></div></div>
                                 <div v-if="buildReviewRewardActive" style="font-size:0.72rem; color:var(--success); font-weight:700;"><i class="ri-gift-2-line"></i> +10 RP · +2 属性点</div>
                             </div>
-                            <div v-if="currentClassSkillTree && remainingRP >= 0 && remainingPoints <= 0"
+                            <div v-if="isFateWorldview || (currentClassSkillTree && remainingRP >= 0 && remainingPoints <= 0)"
                                 style="margin-top:30px; font-size:1.2rem; color:var(--success); font-weight:700;">
                                 准备就绪!
                             </div>
@@ -10170,7 +10239,7 @@
                 <i class="ri-arrow-left-line"></i> 上一步
             </button>
             <button class="btn btn-primary" @click="nextStep">
-                {{ currentStep === 7 ? '开始旅程' : '下一步' }} <i class="ri-arrow-right-line" v-if="currentStep !== 7"></i>
+                {{ stepView === 7 ? '开始旅程' : '下一步' }} <i class="ri-arrow-right-line" v-if="stepView !== 7"></i>
             </button>
         </footer>
 
@@ -10448,15 +10517,27 @@
         createApp({
             setup() {
                 // Steps Configuration
-                const steps = [
-                    { title: '世界观' },
-                    { title: '基本信息' },
-                    { title: '职业技能' },
-                    { title: '背景特质/专长' },
-                    { title: '初始羁绊' },
-                    { title: '构筑评议' },
-                    { title: '信息确认' }
-                ];
+                const steps = computed(() => {
+                    if (isFateWorldview.value) {
+                        return [ { title: '基本信息' }, { title: '信息确认' } ];
+                    }
+                    return [
+                        { title: '世界观' },
+                        { title: '基本信息' },
+                        { title: '职业技能' },
+                        { title: '背景特质/专长' },
+                        { title: '初始羁绊' },
+                        { title: '构筑评议' },
+                        { title: '信息确认' }
+                    ];
+                });
+                // FATE 精简模式下步骤映射：1→基本信息(原step2)，2→信息确认(原step7)
+                const stepView = computed(() => {
+                    if (isFateWorldview.value) {
+                        return currentStep.value === 1 ? 2 : 7;
+                    }
+                    return currentStep.value;
+                });
                 const currentStep = ref(1);
                 // 构筑共鸣评议奖励会直接扩展开局购点与RP预算；达标后锁定，后续调整构筑不会回收，重复评议也不会叠加。
                 const buildReviewBonusRP = ref(0);
@@ -13992,7 +14073,7 @@
                     节点ID: 'city_hometown',
                     地图层级: 0
                 });
-                const selectedWorldview = ref(WORLDVIEW_CORRIDOR_ID);
+                const selectedWorldview = ref(WORLDVIEW_FATE_ID);
                 const selectedOpening = ref('');
                 const customOpeningText = ref('');
                 const isSaoOpeningSelected = computed(() => selectedWorldview.value === WORLDVIEW_SAO_ID);
@@ -19130,13 +19211,23 @@
                 // Nav
                 async function nextStep() {
                     syncCustomTeammateProxy();
-                    if (currentStep.value === 1 && !selectedWorldview.value) {
+                    if (currentStep.value === 1 && !selectedWorldview.value && !isFateWorldview.value) {
                         alert('请先选择世界观后再继续。');
                         return;
                     }
-                    if (currentStep.value < 7) {
+                    const maxStep = isFateWorldview.value ? 2 : 7;
+                    if (currentStep.value < maxStep) {
                         currentStep.value++;
                     } else {
+                        // FATE 精简模式：无需技能树/属性/RP 校验，直接保存并开始
+                        if (isFateWorldview.value) {
+                            if (await saveCharacterToMvu()) {
+                                await applyOpeningWorldbookRules();
+                                await applyFateScriptWorldbook(fateScript.value);
+                                sendStartMessage();
+                            }
+                            return;
+                        }
                         // 校验技能树是否已生成
                         if (!currentClassSkillTree.value) {
                             alert('请先在「职业技能」步骤生成技能树后再创建角色。');
@@ -21697,7 +21788,7 @@ ${JSON.stringify(sourcePayload, null, 2)}`;
                 };
 
                 return {
-                    steps, currentStep, nextStep, prevStep, goToStep,
+                    steps, currentStep, stepView, nextStep, prevStep, goToStep,
                     presetMode, presetSubPage, cancerKnightRevealed, cancerKnightLevel, isPresetChar, currentPresetTraits, currentPresetCompanion,
                     cancerKnightTraits, cancerCompanion, yatoTraits, hiCompanion, selectPresetCharacter,
                     creativeWorkshopEmbedUrl, openCreativeWorkshopInNewTab, workshopEmbedLoading, handleCreativeWorkshopFrameLoad,
