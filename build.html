@@ -7171,7 +7171,7 @@
 
                         <div class="card-grid"
                             style="grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); margin-bottom:20px;">
-                            <div v-for="world in worldviewOptions" :key="world.id" @click="selectWorldview(world.id)"
+                            <div v-for="world in worldviewOptions.filter(w => w.id === WORLDVIEW_FATE_ID)" :key="world.id" @click="selectWorldview(world.id)"
                                 class="selection-card worldview-card"
                                 :class="{ selected: selectedWorldview === world.id }" style="min-height:210px;">
                                 <div class="card-check"><i class="ri-check-line"></i></div>
@@ -11564,7 +11564,7 @@
                     buildReviewReviewedFingerprint.value = '';
                     buildReviewStale.value = false;                    presetMode.value = mode;
                     presetSubPage.value = false;
-                    selectedWorldview.value = WORLDVIEW_CORRIDOR_ID;
+                    selectedWorldview.value = WORLDVIEW_FATE_ID;
                     selectedOpening.value = '';
                     if (mode === 'cancer_knight') {
                         // 预填癌骑士数据
@@ -12897,7 +12897,7 @@
                         const inferredWorldview = openingOptions.value.find(opt => opt.id === config.selectedOpening)?.worldviewId || WORLDVIEW_CORRIDOR_ID;
                         selectedWorldview.value = normalizeWorldviewId(inferredWorldview);
                     } else if (!selectedWorldview.value) {
-                        selectedWorldview.value = WORLDVIEW_CORRIDOR_ID;
+                        selectedWorldview.value = WORLDVIEW_FATE_ID;
                     }
                     if (config.selectedOpening !== undefined) selectedOpening.value = config.selectedOpening;
                     selectedOpening.value = normalizeOpeningForWorldview(selectedWorldview.value, selectedOpening.value);
@@ -19335,7 +19335,7 @@
                         selectedSpawnPoint.value = null;
                         selectedAmberSpawn.value = null;
                         selectedJiuzhouSpawn.value = null;
-                        selectedWorldview.value = WORLDVIEW_CORRIDOR_ID;
+                        selectedWorldview.value = WORLDVIEW_FATE_ID;
                         selectedOpening.value = '';
                         customOpeningText.value = '';
                         selectedCombatValueMode.value = DEFAULT_OPENING_COMBAT_VALUE_MODE;
