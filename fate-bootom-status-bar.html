@@ -8415,10 +8415,11 @@
               装备列表['主手'] = { 名称: name, 等级: np?.等级 || 'A', 类型: np?.类型 || '对城', 描述: np?.描述 || '', 品质: '卓越', 部位: '主手' };
             });
           } else {
-            Object.entries(魔术).forEach(([name, mg]) => {
-              if (!name || name === '无') return;
-              装备列表['主手'] = { 名称: name, 等级: 'C', 类型: '魔术', 描述: mg?.擅长 || mg?.描述 || '', 品质: '精良', 部位: '主手' };
-            });
+            const mSystem = String(魔术?.体系 || '').trim();
+            const mSkill = String(魔术?.擅长 || '').trim();
+            if (mSystem || mSkill) {
+              装备列表['主手'] = { 名称: mSystem || mSkill, 等级: 'C', 类型: '魔术', 描述: mSkill, 品质: '精良', 部位: '主手' };
+            }
           }
           const 技能列表 = {};
           const 职阶技能 = 人物.职阶技能 || {};

@@ -7430,17 +7430,19 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           };
         });
       } else {
-        Object.entries(魔术).forEach(([name, mg]) => {
-          if (!name || name === '无') return;
+        // FATE 御主魔术列表结构：{ 体系, 擅长 }
+        const mSystem = String(魔术?.体系 || '').trim();
+        const mSkill = String(魔术?.擅长 || '').trim();
+        if (mSystem || mSkill) {
           装备列表['主手'] = {
-            名称: name,
+            名称: mSystem || mSkill,
             等级: 'C',
             类型: '魔术',
-            描述: mg?.擅长 || mg?.描述 || '',
+            描述: mSkill,
             品质: '精良',
             部位: '主手'
           };
-        });
+        }
       }
       // 技能树 ← 职阶技能/保有技能（从者）或 魔术体系（御主）
       const 技能列表 = {};
