@@ -7423,36 +7423,51 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           装备列表['主手'] = {
             名称: name,
             等级: np?.等级 || 'A',
-            类型: np?.类型 || '对城',
+            类型: np?.种类 || np?.类型 || '对人',
             描述: np?.描述 || '',
             品质: '卓越',
             部位: '主手'
           };
         });
       } else {
-        // FATE 御主魔术列表结构：{ 体系, 擅长 }
-        const mSystem = String(魔术?.体系 || '').trim();
-        const mSkill = String(魔术?.擅长 || '').trim();
-        if (mSystem || mSkill) {
+        // FATE 御主魔术列表结构：record { 体系: { 名称, 体系, 效果, 描述 } }
+        const mgEntries = Object.entries(魔术).filter(([k, v]) => k && k !== '无');
+        if (mgEntries.length > 0) {
+          const [mgName, mgObj] = mgEntries[0];
           装备列表['主手'] = {
-            名称: mSystem || mSkill,
+            名称: String(mgObj?.名称 || mgName || ''),
             等级: 'C',
             类型: '魔术',
-            描述: mSkill,
+            描述: String(mgObj?.描述 || mgObj?.效果 || ''),
             品质: '精良',
             部位: '主手'
           };
         }
       }
+      // 战斗属性：DNF 攻击/减伤卡片数据源（从宝具/魔术生成最小武器面板）
+      const 战斗属性 = {
+        武器面板: 装备列表['主手'] ? {
+          伤害骰: isServant ? '1d8' : '1d6',
+          等级系数: 1,
+          固定伤害: 0
+        } : null,
+        物理减伤: 0,
+        魔法减伤: 0,
+        每回合动作资源: { 基础攻击次数: 1 }
+      };
       // 技能树 ← 职阶技能/保有技能（从者）或 魔术体系（御主）
       const 技能列表 = {};
       const 职阶技能 = 人物.职阶技能 || {};
       const 保有技能 = 人物.保有技能 || {};
       Object.entries(职阶技能).forEach(([n, v]) => { if (n) 技能列表[n] = { 当前等级: v?.等级 || 1, 描述: v?.描述 || '' }; });
       Object.entries(保有技能).forEach(([n, v]) => { if (n) 技能列表[n] = { 当前等级: v?.等级 || 1, 描述: v?.描述 || '' }; });
-      if (!isServant && (魔术?.体系 || 魔术?.擅长)) {
-        const mName = 魔术.体系 || '魔术';
-        技能列表[mName] = { 当前等级: 1, 描述: 魔术.擅长 || 魔术.体系 || '' };
+      if (!isServant) {
+        const mgEntries = Object.entries(魔术).filter(([k, v]) => k && k !== '无');
+        if (mgEntries.length > 0) {
+          const [mgName, mgObj] = mgEntries[0];
+          const mgDisp = String(mgObj?.名称 || mgName || '魔术');
+          技能列表[mgDisp] = { 当前等级: 1, 描述: String(mgObj?.描述 || mgObj?.效果 || '') };
+        }
       }
       return {
         ...raw,
@@ -7473,6 +7488,7 @@ ri-sword-line ri-shield-line ri-fire-fill ri-drop-fill ri-skull-line ri-ghost-2-
           技能树: { 技能列表 },
           主动技能槽: {},
           觉醒技能槽: {},
+          战斗属性,
           背包: 人物.背包 || {},
           状态效果: 人物.状态效果 || {},
           RP: 0,

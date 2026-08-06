@@ -17930,6 +17930,9 @@
                         let servantClass = '无';
                         if (raceName === '从者') { identityType = '从者'; servantClass = 'Saber'; }
                         else if (['普通人类', '魔术师', '人造人', '吸血鬼', '死徒'].includes(raceName)) { identityType = '御主'; }
+                        // 种族字段映射到 schema 枚举（普通人类/魔术师/人造人/死徒/吸血鬼/混血/英灵/其他）
+                        const fateRaceEnumMap = { '从者': '英灵', '自创': '其他', '普通人类': '普通人类', '魔术师': '魔术师', '人造人': '人造人', '吸血鬼': '吸血鬼', '死徒': '死徒', '混血': '混血' };
+                        const fateRaceValue = fateRaceEnumMap[raceName] || '其他';
 
                         // 出生点（v6 fateSpawnPointData 结构：大陆/区域/场所）
                         const spawnObj = currentSpawnPoints.value.find(sp => sp.name === selectedSpawnPoint.value);
@@ -17949,7 +17952,7 @@
                             名称: character.name || '无名之人',
                             身份类型: identityType,
                             职阶: servantClass,
-                            种族: raceName,
+                            种族: fateRaceValue,
                             性别: character.gender,
                             年龄: String(character.age || ''),
                             外貌: '',
@@ -17971,14 +17974,36 @@
                             保有技能: {},
                             宝具列表: isServant
                                 ? { [fateServantProfile.宝具名.trim() || '未定']: {
+                                    真名: fateServantProfile.宝具名.trim() || '',
                                     等级: fateServantProfile.宝具等级 || 'A',
-                                    类型: fateServantProfile.宝具类型 || '对城',
-                                    描述: fateServantProfile.宝具描述.trim() || '',
-                                    真名解放: false
+                                    种类: fateServantProfile.宝具类型 || '对人',
+                                    射程: '',
+                                    最大捕捉: '',
+                                    真名解放: false,
+                                    解放语: '',
+                                    消耗魔力: '',
+                                    效果: '',
+                                    描述: fateServantProfile.宝具描述.trim() || ''
                                 } }
                                 : {},
                             魔术列表: !isServant
-                                ? { 体系: fateMagecraft.魔术体系.trim() || '无', 擅长: fateMagecraft.擅长魔术.trim() || '' }
+                                ? (() => {
+                                    const __sysRaw = String(fateMagecraft.魔术体系 || '').trim();
+                                    const __sysMatch = ['强化', '投影', '结界', '诅咒', '暗示', '束缚', '治愈',
+                                        '火', '水', '风', '地', '土', '雷', '木', '金', '虚数', '空', '以太',
+                                        '炼金', '占星', '咒术', '死灵', '神代', '其他'].find(s => __sysRaw.includes(s));
+                                    const __system = __sysMatch || '其他';
+                                    return {
+                                        [__system]: {
+                                            名称: __sysRaw || __system,
+                                            体系: __system,
+                                            咏唱: '单节',
+                                            消耗魔力: '',
+                                            效果: String(fateMagecraft.擅长魔术 || '').trim(),
+                                            描述: String(fateMagecraft.擅长魔术 || '').trim()
+                                        }
+                                    };
+                                })()
                                 : {},
                             契约: isServant
                                 ? { 御主: '', 从者: character.name || '无名之人', 职阶: fateServantProfile.职阶 || 'Saber', 真名: fateServantProfile.真名.trim() || '隐藏', 契约状态: '缔结中', 供魔状况: '平稳', 令咒: { 剩余画数: 0, 使用记录: [] } }
