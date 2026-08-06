@@ -8223,6 +8223,26 @@
                                 </template>
                             </div>
                         </div>
+                            <!-- FATE 六维参数 -->
+                            <template v-if="isFateWorldview">
+                                <div style="margin-top:18px; padding-top:16px; border-top:1px dashed rgba(0,0,0,0.08);">
+                                    <label class="form-label" style="margin-bottom:8px; display:block;">六维参数（型月等级 E &lt; D &lt; C &lt; B &lt; A &lt; EX）</label>
+                                    <div style="font-size:0.8rem; color:var(--secondary); margin-bottom:10px;">
+                                        {{ String(character.race || '').startsWith('从者') ? '英灵级六维：决定战斗对抗与宝具威力' : '人类级六维：凡人巅峰约 E~D，魔术师魔力可达 C' }}
+                                    </div>
+                                    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px;">
+                                        <div v-for="(label, key) in SIX_STAT_LABELS" :key="key"
+                                            style="display:flex; align-items:center; gap:8px; padding:8px 10px; background:white; border-radius:8px; box-shadow:var(--shadow-card);">
+                                            <span style="font-size:0.8rem; font-weight:600; flex:1; color:var(--primary);">{{ label }}</span>
+                                            <select v-model="fateSixStats[key]" class="form-select"
+                                                style="padding:6px 8px; font-size:0.85rem; width:64px; text-align:center;">
+                                                <option v-for="r in FATE_RANK_OPTIONS" :key="r" :value="r">{{ r }}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+
                             <!-- FATE 剧本与开局场景（精简模式专属） -->
                             <template v-if="isFateWorldview">
                                 <div style="margin-top:18px; padding-top:16px; border-top:1px dashed rgba(0,0,0,0.08);">
@@ -9921,6 +9941,9 @@
                                     <div><span style="color:var(--secondary);">届数</span>：<strong>{{ (fateScript === 'FZ-上' || fateScript === 'FZ-下') ? '第四次圣杯战争' : '第五次圣杯战争' }}</strong></div>
                                     <div><span style="color:var(--secondary);">出生点</span>：<strong>{{ selectedSpawnPoint.value || '卫宫邸' }}</strong></div>
                                     <div><span style="color:var(--secondary);">开局</span>：<strong>{{ selectedOpeningInfo?.name || '冬木市的日常' }}</strong></div>
+                                    <div style="grid-column:1/-1; margin-top:6px; padding-top:8px; border-top:1px dashed rgba(139,32,32,0.15);">
+                                        <span style="color:var(--secondary);">六维参数</span>：<strong>筋{{ fateSixStats.筋力 }}｜耐{{ fateSixStats.耐久 }}｜敏{{ fateSixStats.敏捷 }}｜魔{{ fateSixStats.魔力 }}｜幸{{ fateSixStats.幸运 }}｜宝{{ fateSixStats.宝具 }}</strong>
+                                    </div>
                                 </div>
                             </div>
 
@@ -14083,6 +14106,23 @@
                 const isDragonWorldview = computed(() => selectedWorldview.value === WORLDVIEW_DRAGON_ID);
                 const isFateWorldview = computed(() => selectedWorldview.value === WORLDVIEW_FATE_ID);
 
+                // ===== FATE 六维参数（筋/耐/敏/魔/幸/宝 · E~EX） =====
+                const FATE_RANK_OPTIONS = ['E-', 'E', 'E+', 'D-', 'D', 'D+', 'C-', 'C', 'C+', 'B-', 'B', 'B+', 'A-', 'A', 'A+', 'EX', '无'];
+                const SIX_STAT_LABELS = Object.freeze({
+                    筋力: '筋力 STR', 耐久: '耐久 CON', 敏捷: '敏捷 AGI', 魔力: '魔力 MAG', 幸运: '幸运 LCK', 宝具: '宝具 NP'
+                });
+                const fateSixStats = reactive({
+                    筋力: 'E', 耐久: 'E', 敏捷: 'E', 魔力: 'D', 幸运: 'E', 宝具: '无'
+                });
+                // 身份变化时重置六维默认值（从者=英灵级，御主=人类级）
+                watch(() => character.race, (race) => {
+                    if (race === '从者') {
+                        Object.assign(fateSixStats, { 筋力: 'B', 耐久: 'B', 敏捷: 'B', 魔力: 'A', 幸运: 'C', 宝具: 'B' });
+                    } else {
+                        Object.assign(fateSixStats, { 筋力: 'E', 耐久: 'E', 敏捷: 'E', 魔力: 'D', 幸运: 'E', 宝具: '无' });
+                    }
+                }, { immediate: true });
+
                 // ===== FATE 剧本选项（对应世界书 19 条时间线） =====
                 const fateScript = ref('FSN-混合');
                 const FATE_SCRIPT_OPTIONS = Object.freeze([
@@ -17783,7 +17823,8 @@
                                 ? { 当前值: 80, 上限值: 100, 状态: '平稳', 描述: '由御主供魔维持现界' }
                                 : { 当前值: 50, 上限值: 100, 状态: '平稳', 描述: '' },
                             六维参数: {
-                                筋力: 'C', 耐久: 'C', 敏捷: 'C', 魔力: 'C', 幸运: 'C', 宝具: 'C'
+                                筋力: fateSixStats.筋力 || 'C', 耐久: fateSixStats.耐久 || 'C', 敏捷: fateSixStats.敏捷 || 'C',
+                                魔力: fateSixStats.魔力 || 'C', 幸运: fateSixStats.幸运 || 'C', 宝具: fateSixStats.宝具 || 'C'
                             },
                             灵基: isServant
                                 ? { 当前HP: 100, 上限HP: 100, 状态: '稳固', 永久缺损: '', 描述: '灵基完好' }
@@ -21865,7 +21906,7 @@ ${JSON.stringify(sourcePayload, null, 2)}`;
                     currentOpeningCombatValueModeLabel, currentOpeningCombatValueModeDescription,
                     difficultyOptionsForCurrentMode, currentDifficultyModeDescription, effectiveDifficultyKey,
                     setOpeningCombatValueMode, setOpeningDifficulty,
-                    isSaoOpeningSelected, isAmberWorldview, isJiuzhouWorldview, isDragonWorldview, isDragonHighSchoolOrigin, isFateWorldview, fateScript, FATE_SCRIPT_OPTIONS, isBondSelectionDisabled, amberUnifiedStartLevels, amberCampTabs, amberRaceCampGroups, selectedAmberCamp, activeAmberCampGroup, saoLockedIdentityName, effectiveDifficultyLabel, effectiveIdentityCost, effectiveIdentityItems,
+                    isSaoOpeningSelected, isAmberWorldview, isJiuzhouWorldview, isDragonWorldview, isDragonHighSchoolOrigin, isFateWorldview, fateScript, FATE_SCRIPT_OPTIONS, fateSixStats, FATE_RANK_OPTIONS, SIX_STAT_LABELS, isBondSelectionDisabled, amberUnifiedStartLevels, amberCampTabs, amberRaceCampGroups, selectedAmberCamp, activeAmberCampGroup, saoLockedIdentityName, effectiveDifficultyLabel, effectiveIdentityCost, effectiveIdentityItems,
                     effectiveStartingGoldAmount, effectiveStartingGoldLabel,
                     effectiveBackgroundName, effectiveBackgroundDesc, hasEffectiveBackgroundText,
                     starterShopState, starterShopAvailable, starterShopSelection, starterShopSelectedItems,
