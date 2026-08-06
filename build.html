@@ -7343,7 +7343,7 @@
                                                         :style="{background: race.tierColor, fontSize:'0.6rem', padding:'1px 4px'}">
                                                         {{ race.tierName }}
                                                     </span>
-                                                    <span v-if="!isJiuzhouWorldview && !isDragonWorldview"
+                                                    <span v-if="!isFateWorldview && !isJiuzhouWorldview && !isDragonWorldview"
                                                         style="font-size:0.65rem; color:var(--secondary);">Lv.{{
                                                         race.startLevel }}</span>
                                                 </div>
@@ -7425,7 +7425,7 @@
                                                     </span>
                                                 </template>
                                                 <span
-                                                    v-if="!isAmberWorldview && !isJiuzhouWorldview && !isDragonWorldview"
+                                                    v-if="!isFateWorldview && !isAmberWorldview && !isJiuzhouWorldview && !isDragonWorldview"
                                                     style="font-size:0.75rem; color:var(--accent); font-weight:600;">初始等级
                                                     Lv.{{ currentRace.startLevel }}</span>
                                                 <span v-if="isDragonWorldview"
@@ -7582,7 +7582,7 @@
                                                     :style="{background: race.tierColor, fontSize:'0.6rem', padding:'1px 4px'}">
                                                     {{ race.tierName }}
                                                 </span>
-                                                <span v-if="!isDragonWorldview"
+                                                <span v-if="!isFateWorldview && !isDragonWorldview"
                                                     style="font-size:0.65rem; color:var(--secondary);">Lv.{{
                                                     race.startLevel }}</span>
                                             </div>
@@ -7617,7 +7617,7 @@
                                                     :style="{background: currentRace.tierColor, fontSize:'0.65rem'}">
                                                     {{ currentRace.tierName }} · 第{{ currentRace.rank }}位
                                                 </span>
-                                                <span v-if="!isDragonWorldview"
+                                                <span v-if="!isFateWorldview && !isDragonWorldview"
                                                     style="font-size:0.75rem; color:var(--accent); font-weight:600;">初始等级
                                                     Lv.{{ currentRace.startLevel }}</span>
                                                 <span v-else
@@ -7858,9 +7858,9 @@
                                                 }">
                                                 <div style="font-size:0.85rem; font-weight:700;"
                                                     :style="{color: selectedLevelMode === 'native' ? 'var(--accent)' : 'var(--primary)'}">
-                                                    种族初始等级
+                                                    <template v-if="!isFateWorldview">种族初始等级</template>
                                                 </div>
-                                                <div style="font-size:0.7rem; color:var(--secondary); margin-top:2px;">
+                                                <div v-if="!isFateWorldview" style="font-size:0.7rem; color:var(--secondary); margin-top:2px;">
                                                     Lv.{{ currentRace.startLevel }}（{{ currentRace.name }}标准）
                                                 </div>
                                             </div>
@@ -8175,7 +8175,7 @@
                                     <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
                                         <i class="ri-map-pin-line" style="font-size:1.1rem; color:var(--gold-dim);"></i>
                                         <span style="font-size:0.9rem; font-weight:700;">出生点选择</span>
-                                        <span style="font-size:0.7rem; color:var(--secondary);">（Lv.{{ actualStartLevel
+                                        <span v-if="!isFateWorldview" style="font-size:0.7rem; color:var(--secondary);">（Lv.{{ actualStartLevel
                                             }}
                                             推荐出生点）</span>
                                     </div>
@@ -8199,7 +8199,7 @@
                                                     }">
                                                     {{ sp.type }}
                                                 </span>
-                                                <span style="font-size:0.6rem; color:var(--secondary);">Lv.{{
+                                                <span v-if="!isFateWorldview" style="font-size:0.6rem; color:var(--secondary);">Lv.{{
                                                     sp.levelRange
                                                     }}</span>
                                             </div>
@@ -9902,7 +9902,7 @@
                                     '未分阵营' }} / </template><template v-else>第{{ currentRace?.rank }}位 </template>{{
                                 displayRaceName }} / {{ displayClassName }} / {{
                                 summaryIdentityLabel }} /
-                                <span style="color:var(--accent); font-weight:600;">Lv.{{ characterLevel }}</span>
+                                <span v-if="!isFateWorldview" style="color:var(--accent); font-weight:600;">Lv.{{ characterLevel }}</span>
                                 <span v-if="summarySpawnName" style="color:var(--gold-dim);"> · <i
                                         class="ri-map-pin-line"></i> {{ summarySpawnName }}</span>
                             </div>
