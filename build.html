@@ -8243,6 +8243,105 @@
                                 </div>
                             </template>
 
+                            <!-- FATE 魔术设定（御主专属） -->
+                            <template v-if="isFateWorldview && !String(character.race || '').startsWith('从者')">
+                                <div style="margin-top:18px; padding-top:16px; border-top:1px dashed rgba(0,0,0,0.08);">
+                                    <label class="form-label" style="margin-bottom:8px; display:block;">魔术设定（御主专属）</label>
+                                    <div style="font-size:0.8rem; color:var(--secondary); margin-bottom:10px;">
+                                        设定你的魔术属性、回路与体系——这将决定你作为御主的战斗方式与魔术刻印
+                                    </div>
+                                    <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; margin-bottom:8px;">
+                                        <div style="display:flex; align-items:center; gap:8px; padding:8px 10px; background:white; border-radius:8px; box-shadow:var(--shadow-card);">
+                                            <span style="font-size:0.8rem; font-weight:600; flex:1; color:var(--primary);">魔术属性</span>
+                                            <select v-model="fateMagecraft.属性" class="form-select"
+                                                style="padding:6px 8px; font-size:0.85rem; width:auto;">
+                                                <option v-for="a in FATE_MAGE_ATTRIBUTES" :key="a" :value="a">{{ a }}</option>
+                                            </select>
+                                        </div>
+                                        <div style="display:flex; align-items:center; gap:8px; padding:8px 10px; background:white; border-radius:8px; box-shadow:var(--shadow-card);">
+                                            <span style="font-size:0.8rem; font-weight:600; flex:1; color:var(--primary);">魔术回路数</span>
+                                            <input v-model.number="fateMagecraft.回路数" type="number" min="0" max="1000"
+                                                style="width:70px; padding:6px 8px; border:1px solid #e0e0e0; border-radius:6px; font-size:0.85rem; text-align:center; outline:none;">
+                                        </div>
+                                    </div>
+                                    <div style="margin-bottom:8px;">
+                                        <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:4px;">魔术体系 / 擅长领域
+                                            <span style="color:#999; font-weight:400;">（如：强化·投影、地属性魔术、召唤术式…）</span></label>
+                                        <input v-model="fateMagecraft.魔术体系" placeholder="例：强化魔术、投影魔术、精灵魔术…"
+                                            style="width:100%; padding:8px 10px; border:1px solid #e0e0e0; border-radius:8px; font-size:0.85rem; outline:none;">
+                                    </div>
+                                    <div style="margin-bottom:8px;">
+                                        <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:4px;">擅长魔术描述（可选）</label>
+                                        <textarea v-model="fateMagecraft.擅长魔术" maxlength="300" rows="2"
+                                            placeholder="描述你擅长的魔术效果…"
+                                            style="width:100%; padding:8px 10px; border:1px solid #e0e0e0; border-radius:8px; font-size:0.85rem; outline:none; resize:vertical; font-family:inherit; line-height:1.6;"></textarea>
+                                    </div>
+                                    <div>
+                                        <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:4px;">魔术刻印（可选，家系传承）</label>
+                                        <input v-model="fateMagecraft.魔术刻印" placeholder="例：远坂家·魔术刻印（10代）"
+                                            style="width:100%; padding:8px 10px; border:1px solid #e0e0e0; border-radius:8px; font-size:0.85rem; outline:none;">
+                                    </div>
+                                </div>
+                            </template>
+
+                            <!-- FATE 英灵档案（从者专属：真名/神话/宝具） -->
+                            <template v-if="isFateWorldview && String(character.race || '').startsWith('从者')">
+                                <div style="margin-top:18px; padding-top:16px; border-top:1px dashed rgba(0,0,0,0.08);">
+                                    <label class="form-label" style="margin-bottom:8px; display:block;">英灵档案（从者专属）</label>
+                                    <div style="font-size:0.8rem; color:var(--secondary); margin-bottom:10px;">
+                                        设定你的真名、神话背景与宝具——宝具是决定胜负的最终底牌
+                                    </div>
+                                    <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; margin-bottom:8px;">
+                                        <div style="display:flex; align-items:center; gap:8px; padding:8px 10px; background:white; border-radius:8px; box-shadow:var(--shadow-card);">
+                                            <span style="font-size:0.8rem; font-weight:600; flex:1; color:var(--primary);">职阶</span>
+                                            <select v-model="fateServantProfile.职阶" class="form-select"
+                                                style="padding:6px 8px; font-size:0.85rem; width:auto;">
+                                                <option v-for="c in FATE_SERVANT_CLASSES" :key="c" :value="c">{{ c }}</option>
+                                            </select>
+                                        </div>
+                                        <div style="display:flex; align-items:center; gap:8px; padding:8px 10px; background:white; border-radius:8px; box-shadow:var(--shadow-card);">
+                                            <span style="font-size:0.8rem; font-weight:600; flex:1; color:var(--primary);">真名</span>
+                                            <input v-model="fateServantProfile.真名" placeholder="如：阿尔托莉雅·潘德拉贡"
+                                                style="flex:1; padding:6px 8px; border:1px solid #e0e0e0; border-radius:6px; font-size:0.85rem; outline:none;">
+                                        </div>
+                                    </div>
+                                    <div style="margin-bottom:8px;">
+                                        <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:4px;">神话背景 / 出身传说
+                                            <span style="color:#999; font-weight:400;">（你的英灵传说来源）</span></label>
+                                        <textarea v-model="fateServantProfile.神话背景" maxlength="500" rows="3"
+                                            placeholder="例：古不列颠传说中的骑士王，拔起石中剑的王者，圆桌骑士的领袖…"
+                                            style="width:100%; padding:8px 10px; border:1px solid #e0e0e0; border-radius:8px; font-size:0.85rem; outline:none; resize:vertical; font-family:inherit; line-height:1.6;"></textarea>
+                                    </div>
+                                    <div style="display:grid; grid-template-columns:2fr 1fr 1fr; gap:8px; margin-bottom:8px;">
+                                        <div style="display:flex; align-items:center; gap:8px; padding:8px 10px; background:white; border-radius:8px; box-shadow:var(--shadow-card);">
+                                            <span style="font-size:0.8rem; font-weight:600; color:var(--primary); white-space:nowrap;">宝具名</span>
+                                            <input v-model="fateServantProfile.宝具名" placeholder="如：誓约胜利之剑"
+                                                style="flex:1; padding:6px 8px; border:1px solid #e0e0e0; border-radius:6px; font-size:0.85rem; outline:none;">
+                                        </div>
+                                        <div style="display:flex; align-items:center; gap:6px; padding:8px 10px; background:white; border-radius:8px; box-shadow:var(--shadow-card);">
+                                            <span style="font-size:0.8rem; font-weight:600; color:var(--primary);">等级</span>
+                                            <select v-model="fateServantProfile.宝具等级" class="form-select"
+                                                style="padding:6px 6px; font-size:0.85rem; width:70px; text-align:center;">
+                                                <option v-for="r in FATE_RANK_OPTIONS" :key="r" :value="r">{{ r }}</option>
+                                            </select>
+                                        </div>
+                                        <div style="display:flex; align-items:center; gap:6px; padding:8px 10px; background:white; border-radius:8px; box-shadow:var(--shadow-card);">
+                                            <span style="font-size:0.8rem; font-weight:600; color:var(--primary);">类型</span>
+                                            <select v-model="fateServantProfile.宝具类型" class="form-select"
+                                                style="padding:6px 6px; font-size:0.85rem; width:auto;">
+                                                <option v-for="t in FATE_NP_TYPES" :key="t" :value="t">{{ t }}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:4px;">宝具描述</label>
+                                        <textarea v-model="fateServantProfile.宝具描述" maxlength="300" rows="2"
+                                            placeholder="描述宝具的形态、解放效果与传说含义…"
+                                            style="width:100%; padding:8px 10px; border:1px solid #e0e0e0; border-radius:8px; font-size:0.85rem; outline:none; resize:vertical; font-family:inherit; line-height:1.6;"></textarea>
+                                    </div>
+                                </div>
+                            </template>
+
                             <!-- FATE 剧本与开局场景（精简模式专属） -->
                             <template v-if="isFateWorldview">
                                 <div style="margin-top:18px; padding-top:16px; border-top:1px dashed rgba(0,0,0,0.08);">
@@ -9943,6 +10042,14 @@
                                     <div><span style="color:var(--secondary);">开局</span>：<strong>{{ selectedOpeningInfo?.name || '冬木市的日常' }}</strong></div>
                                     <div style="grid-column:1/-1; margin-top:6px; padding-top:8px; border-top:1px dashed rgba(139,32,32,0.15);">
                                         <span style="color:var(--secondary);">六维参数</span>：<strong>筋{{ fateSixStats.筋力 }}｜耐{{ fateSixStats.耐久 }}｜敏{{ fateSixStats.敏捷 }}｜魔{{ fateSixStats.魔力 }}｜幸{{ fateSixStats.幸运 }}｜宝{{ fateSixStats.宝具 }}</strong>
+                                        <template v-if="isFateWorldview && String(character.race || '').startsWith('从者')">
+                                            <br>
+                                            <span style="color:var(--secondary);">宝具</span>：<strong>{{ fateServantProfile.宝具名 || '未定' }}（{{ fateServantProfile.宝具等级 }}·{{ fateServantProfile.宝具类型 }}）</strong>
+                                        </template>
+                                        <template v-else-if="isFateWorldview">
+                                            <br>
+                                            <span style="color:var(--secondary);">魔术</span>：<strong>{{ fateMagecraft.属性 }}属性·{{ fateMagecraft.回路数 }}回路</strong> <span style="color:var(--secondary); font-size:0.8rem;">{{ fateMagecraft.魔术体系 }}</span>
+                                        </template>
                                     </div>
                                 </div>
                             </div>
@@ -14123,6 +14230,37 @@
                     }
                 }, { immediate: true });
 
+                // ===== FATE 魔术设定（御主） =====
+                const FATE_MAGE_ATTRIBUTES = ['地', '水', '火', '风', '空', '架空元素', '虚', '无', '平均', '特殊'];
+                const fateMagecraft = reactive({
+                    属性: '地',
+                    回路数: 20,
+                    魔术体系: '',
+                    擅长魔术: '',
+                    魔术刻印: ''
+                });
+
+                // ===== FATE 英灵档案（从者：真名/神话背景/宝具） =====
+                const FATE_SERVANT_CLASSES = ['Saber', 'Archer', 'Lancer', 'Rider', 'Caster', 'Assassin', 'Berserker'];
+                const FATE_NP_TYPES = ['对人', '对军', '对城', '对界', '对神', '结界', '对人宝具', '对军宝具', '对城宝具', '对界宝具'];
+                const fateServantProfile = reactive({
+                    职阶: 'Saber',
+                    真名: '',
+                    神话背景: '',
+                    宝具名: '',
+                    宝具等级: 'A',
+                    宝具类型: '对城',
+                    宝具描述: ''
+                });
+                // 身份变化时：从者 → 重置英灵档案默认职阶；御主 → 重置魔术默认
+                watch(() => character.race, (race) => {
+                    if (race === '从者') {
+                        Object.assign(fateServantProfile, { 职阶: 'Saber', 宝具等级: 'A', 宝具类型: '对城' });
+                    } else {
+                        Object.assign(fateMagecraft, { 属性: '地', 回路数: 20, 魔术体系: '', 擅长魔术: '', 魔术刻印: '' });
+                    }
+                }, { immediate: false });
+
                 // ===== FATE 剧本选项（对应世界书 19 条时间线） =====
                 const fateScript = ref('FSN-混合');
                 const FATE_SCRIPT_OPTIONS = Object.freeze([
@@ -17815,10 +17953,10 @@
                             性别: character.gender,
                             年龄: String(character.age || ''),
                             外貌: '',
-                            背景设定: effectiveBackgroundDesc.value || '',
+                            背景设定: isServant ? (fateServantProfile.神话背景.trim() || '英灵传说') : (fateMagecraft.魔术体系.trim() || effectiveBackgroundDesc.value || ''),
                             魔术回路: isServant
                                 ? { 主回路: 0, 次回路: 0, 质量: '无', 状态: '休眠', 属性: '', 魔术刻印: '', 描述: '英灵不依赖魔术回路现界' }
-                                : { 主回路: raceName === '魔术师' ? 20 : (raceName === '人造人' ? 40 : (raceName === '吸血鬼' || raceName === '死徒' ? 30 : 0)), 次回路: 0, 质量: raceName === '普通人类' ? '无' : 'C', 状态: '正常', 属性: '地', 魔术刻印: '', 描述: '' },
+                                : { 主回路: Number(fateMagecraft.回路数) || (raceName === '魔术师' ? 20 : (raceName === '人造人' ? 40 : (raceName === '吸血鬼' || raceName === '死徒' ? 30 : 0))), 次回路: 0, 质量: raceName === '普通人类' ? '无' : 'C', 状态: '正常', 属性: fateMagecraft.属性 || '地', 魔术刻印: fateMagecraft.魔术刻印 || '', 描述: fateMagecraft.魔术体系 || '' },
                             魔力: isServant
                                 ? { 当前值: 80, 上限值: 100, 状态: '平稳', 描述: '由御主供魔维持现界' }
                                 : { 当前值: 50, 上限值: 100, 状态: '平稳', 描述: '' },
@@ -17831,10 +17969,19 @@
                                 : {},
                             职阶技能: {},
                             保有技能: {},
-                            宝具列表: isServant ? {} : {},
-                            魔术列表: !isServant ? {} : {},
+                            宝具列表: isServant
+                                ? { [fateServantProfile.宝具名.trim() || '未定']: {
+                                    等级: fateServantProfile.宝具等级 || 'A',
+                                    类型: fateServantProfile.宝具类型 || '对城',
+                                    描述: fateServantProfile.宝具描述.trim() || '',
+                                    真名解放: false
+                                } }
+                                : {},
+                            魔术列表: !isServant
+                                ? { 体系: fateMagecraft.魔术体系.trim() || '无', 擅长: fateMagecraft.擅长魔术.trim() || '' }
+                                : {},
                             契约: isServant
-                                ? { 御主: '', 从者: character.name || '无名之人', 职阶: 'Saber', 真名: '隐藏', 契约状态: '缔结中', 供魔状况: '平稳', 令咒: { 剩余画数: 0, 使用记录: [] } }
+                                ? { 御主: '', 从者: character.name || '无名之人', 职阶: fateServantProfile.职阶 || 'Saber', 真名: fateServantProfile.真名.trim() || '隐藏', 契约状态: '缔结中', 供魔状况: '平稳', 令咒: { 剩余画数: 0, 使用记录: [] } }
                                 : { 御主: character.name || '无名之人', 从者: '', 职阶: '无', 真名: '无', 契约状态: '无', 供魔状况: '无', 令咒: { 剩余画数: 3, 使用记录: [] } },
                             状态效果: {},
                             金钱: 50000,
@@ -19701,7 +19848,34 @@
                         const fateScriptMeta = FATE_SCRIPT_OPTIONS.find(o => o.id === fateScript.value) || FATE_SCRIPT_OPTIONS[0];
                         const isServantMsg = fateRaceNameMsg === '从者';
                         config.角色信息.身份类型 = isServantMsg ? '从者' : (['普通人类', '魔术师', '人造人', '吸血鬼', '死徒'].includes(fateRaceNameMsg) ? '御主' : '自创');
-                        config.角色信息.职阶 = isServantMsg ? 'Saber（可依英灵设定修改）' : '无';
+                        config.角色信息.职阶 = isServantMsg ? (fateServantProfile.职阶 || 'Saber') : '无';
+                        // FATE 不需要 DNF 式初始道具/种族序位
+                        delete config.初始道具;
+                        delete config.角色信息.种族序位;
+                        delete config.角色信息.种族描述;
+                        if (isServantMsg) {
+                            // 从者：英灵档案（真名/神话背景/宝具）
+                            config.英灵档案 = {
+                                职阶: fateServantProfile.职阶 || 'Saber',
+                                真名: fateServantProfile.真名.trim() || '未公开',
+                                神话背景: fateServantProfile.神话背景.trim() || '（请在开局后向 AI 补充你的传说）',
+                                宝具: {
+                                    名称: fateServantProfile.宝具名.trim() || '未定',
+                                    等级: fateServantProfile.宝具等级 || 'A',
+                                    类型: fateServantProfile.宝具类型 || '对城',
+                                    描述: fateServantProfile.宝具描述.trim() || ''
+                                }
+                            };
+                        } else {
+                            // 御主：魔术设定
+                            config.魔术设定 = {
+                                属性: fateMagecraft.属性 || '地',
+                                回路数: Number(fateMagecraft.回路数) || 20,
+                                魔术体系: fateMagecraft.魔术体系.trim() || '',
+                                擅长魔术: fateMagecraft.擅长魔术.trim() || '',
+                                魔术刻印: fateMagecraft.魔术刻印.trim() || ''
+                            };
+                        }
                         config.圣杯战争 = {
                             届数: (fateScript.value === 'FZ-上' || fateScript.value === 'FZ-下') ? '第四次' : '第五次',
                             剧本: fateScript.value,
@@ -19715,6 +19889,7 @@
                         const fateSpawnObj = currentSpawnPoints.value.find(sp => sp.name === selectedSpawnPoint.value);
                         config.出生点 = {
                             名称: selectedSpawnPoint.value || '卫宫邸',
+                            城市: '冬木市',
                             区域: fateSpawnObj?.区域 || '深山镇',
                             场所: fateSpawnObj?.场所 || '卫宫邸',
                             描述: fateSpawnObj?.desc || ''
@@ -19725,7 +19900,7 @@
 
                     const shouldIncludeBackgroundConfig = isSaoOpening
                         ? hasEffectiveBackgroundText.value
-                        : (customIdentity.enabled || character.identity === '__custom__');
+                        : (!isFateWorld && (customIdentity.enabled || character.identity === '__custom__'));
                     if (shouldIncludeBackgroundConfig) {
                         config.出身背景 = {
                             名称: effectiveBackgroundName.value || character.identity,
@@ -19763,7 +19938,7 @@
                             聚落描述: SAO_INITIAL_SPAWN_INFO.聚落描述,
                             周边威胁: SAO_INITIAL_SPAWN_INFO.周边威胁
                         };
-                    } else if (spawnObj) {
+                    } else if (spawnObj && !isFateWorld) {
                         config.出生点 = {
                             名称: spawnObj.名称 || spawnObj.name,
                             大陆: spawnObj.大陆 || '',
@@ -19778,8 +19953,8 @@
                             config.出生点.场所 = spawnObj.场所 || '';
                         }
                     }
-                    // 缘定（队友）
-                    if (character.teammates.length > 0) {
+                    // 缘定（队友）——FATE 无队友概念，跳过
+                    if (!isFateWorld && character.teammates.length > 0) {
                         config.缘定 = character.teammates.map(t => {
                             if (t.id === '__custom__' && customTeammate.enabled) {
                                 // 自定义队友：发送外貌、着装、背景设定
@@ -19799,7 +19974,7 @@
                                 desc: t.desc || ''
                             };
                         });
-                    } else {
+                    } else if (!isFateWorld) {
                         config.缘定 = '无（独狼）';
                     }
 
@@ -19813,7 +19988,9 @@
                     const shouldDelayBondContact = !hasCustomTeammate;
 
                     // 根据是否为预设角色生成不同的开局描述
-                    const initPrefix = `进行开局初始化，请根据以下json配置，只初始化其中涉及的初始道具，人物基本属性已经有值，禁止修改。但以下JSON初始道具字段中要求的装备数量和品质必须按要求生成，其他已经有值的人物属性禁止初始化替换。人物和羁绊列表已经有值，禁止初始化替换，然后更新大陆和区域等地点变量，合理填写当前场所，全量刷新传闻，必须完整。\n\`\`\`json\n${jsonStr}\n\`\`\`\n`;
+                    const initPrefix = isFateWorld
+                        ? `进行开局初始化，请根据以下json配置严格执行：人物基本信息、身份类型、职阶、英灵档案/魔术设定、圣杯战争进度、出生点（城市/区域/场所）均已确定，禁止修改或重新初始化。更新位置变量（城市/区域/场所）与圣杯战争信息，全量刷新传闻，必须完整。\n\`\`\`json\n${jsonStr}\n\`\`\`\n`
+                        : `进行开局初始化，请根据以下json配置，只初始化其中涉及的初始道具，人物基本属性已经有值，禁止修改。但以下JSON初始道具字段中要求的装备数量和品质必须按要求生成，其他已经有值的人物属性禁止初始化替换。人物和羁绊列表已经有值，禁止初始化替换，然后更新大陆和区域等地点变量，合理填写当前场所，全量刷新传闻，必须完整。\n\`\`\`json\n${jsonStr}\n\`\`\`\n`;
 
                     let message;
                     if (isPresetChar.value) {
@@ -21906,7 +22083,7 @@ ${JSON.stringify(sourcePayload, null, 2)}`;
                     currentOpeningCombatValueModeLabel, currentOpeningCombatValueModeDescription,
                     difficultyOptionsForCurrentMode, currentDifficultyModeDescription, effectiveDifficultyKey,
                     setOpeningCombatValueMode, setOpeningDifficulty,
-                    isSaoOpeningSelected, isAmberWorldview, isJiuzhouWorldview, isDragonWorldview, isDragonHighSchoolOrigin, isFateWorldview, fateScript, FATE_SCRIPT_OPTIONS, fateSixStats, FATE_RANK_OPTIONS, SIX_STAT_LABELS, isBondSelectionDisabled, amberUnifiedStartLevels, amberCampTabs, amberRaceCampGroups, selectedAmberCamp, activeAmberCampGroup, saoLockedIdentityName, effectiveDifficultyLabel, effectiveIdentityCost, effectiveIdentityItems,
+                    isSaoOpeningSelected, isAmberWorldview, isJiuzhouWorldview, isDragonWorldview, isDragonHighSchoolOrigin, isFateWorldview, fateScript, FATE_SCRIPT_OPTIONS, fateSixStats, FATE_RANK_OPTIONS, SIX_STAT_LABELS, FATE_MAGE_ATTRIBUTES, fateMagecraft, FATE_SERVANT_CLASSES, FATE_NP_TYPES, fateServantProfile, isBondSelectionDisabled, amberUnifiedStartLevels, amberCampTabs, amberRaceCampGroups, selectedAmberCamp, activeAmberCampGroup, saoLockedIdentityName, effectiveDifficultyLabel, effectiveIdentityCost, effectiveIdentityItems,
                     effectiveStartingGoldAmount, effectiveStartingGoldLabel,
                     effectiveBackgroundName, effectiveBackgroundDesc, hasEffectiveBackgroundText,
                     starterShopState, starterShopAvailable, starterShopSelection, starterShopSelectedItems,
