@@ -915,7 +915,8 @@
         body {
             font-family: var(--font-ui);
             background-color: var(--bg-body);
-            background-image: url('bg.png');
+            background-image: radial-gradient(ellipse at 20% 0%, rgba(139,32,32,0.18) 0%, transparent 55%),
+                              radial-gradient(ellipse at 85% 100%, rgba(200,155,60,0.12) 0%, transparent 50%);
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -15769,7 +15770,6 @@
                     };
                 });
                 const STARTER_SHOP_REMOTE_URLS = Object.freeze([
-                    './start_equipment_shop.json',
                     'https://cdn.jsdelivr.net/gh/tangquanghuy/dnf@master/start_equipment_shop.json',
                     'https://cdn.jsdelivr.net/gh/tangquanghuy/dnf@master/start_equipment_shop_v1_3.json'
                 ]);
