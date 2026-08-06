@@ -8672,6 +8672,22 @@
                         <!-- 普通模式出身背景选择 -->
                         <template v-else>
 
+                            <!-- FATE 剧本选择 -->
+                            <template v-if="isFateWorldview">
+                                <label class="form-label" style="margin-bottom:8px; display:block;">选择剧本时间线</label>
+                                <div style="font-size:0.8rem; color:var(--secondary); margin-bottom:10px;">
+                                    决定故事走向与时间线（对应世界书「时间线」条目自动切换）
+                                </div>
+                                <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:6px; margin-bottom:16px;">
+                                    <div v-for="s in FATE_SCRIPT_OPTIONS" :key="s.id" @click="fateScript = s.id"
+                                        class="compact-card" :class="{ selected: fateScript === s.id }"
+                                        style="flex-direction:column; align-items:flex-start; height:auto; padding:10px 12px; gap:3px;">
+                                        <span style="font-size:0.85rem; font-weight:600;">{{ s.name }}</span>
+                                        <span style="font-size:0.7rem; color:var(--secondary); line-height:1.4;">{{ s.desc }}</span>
+                                    </div>
+                                </div>
+                            </template>
+
                             <!-- 开局选择 -->
                             <label class="form-label" style="margin-bottom:8px; display:block;">选择开局场景</label>
                             <div style="font-size:0.8rem; color:var(--secondary); margin-bottom:12px;">
@@ -13984,6 +14000,31 @@
                 const isJiuzhouWorldview = computed(() => selectedWorldview.value === WORLDVIEW_JIUZHOU_ID);
                 const isDragonWorldview = computed(() => selectedWorldview.value === WORLDVIEW_DRAGON_ID);
                 const isFateWorldview = computed(() => selectedWorldview.value === WORLDVIEW_FATE_ID);
+
+                // ===== FATE 剧本选项（对应世界书 19 条时间线） =====
+                const fateScript = ref('FSN-混合');
+                const FATE_SCRIPT_OPTIONS = Object.freeze([
+                    { id: 'FSN-混合', name: 'FSN 混合线', desc: '命运之夜共通线：五战开幕，多路线融合推进', entry: '时间线-FSN-混合' },
+                    { id: 'FSN-Fate', name: 'FSN Fate线', desc: 'Saber线：阿尔托莉雅的过去与士郎的正义理想', entry: '时间线-FSN-Fate' },
+                    { id: 'FSN-UBW', name: 'FSN UBW线', desc: 'Archer线：无限剑制与理想之清算', entry: '时间线-FSN-UBW' },
+                    { id: 'FSN-HF', name: 'FSN HF线', desc: '樱线：黑影与圣杯之恶，黑暗基调', entry: '时间线-FSN-HF' },
+                    { id: 'FZ-上', name: 'FZ · 第四次战争（上）', desc: '1994年四战前期：切嗣与爱因兹贝伦的暗战', entry: '时间线-FZ-上' },
+                    { id: 'FZ-下', name: 'FZ · 第四次战争（下）', desc: '1994年四战后期：冬木大火与圣杯真相', entry: '时间线-FZ-下' },
+                    { id: '二世事件簿-上', name: '二世事件簿·上', desc: '韦伯成为君主，埃尔梅罗教室的魔术悬案', entry: '时间线-二世事件簿-上' },
+                    { id: '二世事件簿-下', name: '二世事件簿·下', desc: '伦敦与时钟塔的深层谜团', entry: '时间线-二世事件簿-下' },
+                    { id: 'FSF', name: 'Fate/strange Fake', desc: '斯诺菲尔德镇的虚伪圣杯战争', entry: '时间线-FSF' },
+                    { id: '魔法使之夜', name: '魔法使之夜', desc: '苍崎青子与久远寺有珠的三咲市之夜', entry: '时间线-魔法使之夜' },
+                    { id: '空之境界', name: '空之境界', desc: '两仪式的杀人鬼之夜与根源', entry: '时间线-空之境界' },
+                    { id: '月姬2000', name: '月姬 2000', desc: '志贵与Arcueid的千年之夜', entry: '时间线-月姬2000' },
+                    { id: '月姬2021', name: '月姬 2021', desc: '里线：月之珊瑚与死徒诸王', entry: '时间线-月姬2021' },
+                    { id: '魔法少女伊莉雅-1-2季', name: '魔法少女伊莉雅 1-2季', desc: '伊莉雅的魔法少女日常与卡片战争', entry: '时间线-魔法少女伊莉雅-第一季+第二季' },
+                    { id: '魔法少女伊莉雅-3-4季', name: '魔法少女伊莉雅 3-4季', desc: '平行世界的恩兹华斯篇', entry: '时间线-魔法少女伊莉雅-第三季+第四季' },
+                    { id: '幻想嘉年华', name: '幻想嘉年华', desc: '轻松搞笑的英灵大乱斗日常', entry: '时间线-幻想嘉年华' },
+                    { id: '卫宫家今天的饭', name: '卫宫家今天的饭', desc: '温馨料理日常，无战斗', entry: '时间线-卫宫家今天的饭' },
+                    { id: 'FA-上', name: 'FA · 红黑战争（上）', desc: '七对七的亚种圣杯战争', entry: '时间线-FA-上' },
+                    { id: 'FA-下', name: 'FA · 红黑战争（下）', desc: '齐格与贞德的拯救之旅', entry: '时间线-FA-下' },
+                    { id: '自定义', name: '自定义剧本', desc: '按你的设定推进，时间线自行把握', entry: '' }
+                ]);
                 const isDragonHighSchoolOrigin = computed(() => isDragonWorldview.value && character.race === '青春期男高');
                 const showMapWorldbookOption = computed(() => selectedWorldview.value === WORLDVIEW_CORRIDOR_ID);
                 const AMBER_BLOCKED_SPAWN_IDS = new Set([
@@ -17273,7 +17314,16 @@
                         if (worldviewLabel === 'FATE') {
                             mvuData.stat_data.世界信息.年历 = '2004年2月2日';
                             mvuData.stat_data.世界信息.世界剧情 = '事件A: 五战前的日常';
-                            mvuData.stat_data.世界信息.位置 = { 大陆: '冬木市', 区域: '深山镇', 场所: '卫宫邸' };
+                            mvuData.stat_data.世界信息.位置 = { 城市: '冬木市', 区域: '深山镇', 场所: '卫宫邸' };
+                            mvuData.stat_data.系统配置.剧本 = fateScript.value || 'FSN-混合';
+                            mvuData.stat_data.当前事件 = mvuData.stat_data.当前事件 || {};
+                            mvuData.stat_data.当前事件.圣杯战争信息 = {
+                                届数: '第五次',
+                                阶段: '未开始',
+                                当前剧本: fateScript.value || 'FSN-混合',
+                                已死亡从者: [],
+                                已发生事件: {}
+                            };
                         }
                         if (worldviewLabel === '屠龙与都市日常') {
                             mvuData.stat_data.世界信息.年历 = '2026年3月1日';
@@ -17598,8 +17648,168 @@
                     return nextEquipment;
                 };
 
+                // ===== FATE 世界观独立保存流程（圣杯战争角色：宝具/魔术/令咒/契约/六维参数） =====
+                async function saveFateCharacterToMvu() {
+                    const mvu = getMvuApi();
+                    if (!mvu) {
+                        console.error('[FATE开局] MVU API不可用');
+                        alert('MVU系统不可用，无法保存角色数据');
+                        return false;
+                    }
+                    try {
+                        const mvuData = mvu.getMvuData({ type: 'message', message_id: 'latest' });
+                        if (!mvuData) {
+                            alert('无法获取游戏数据');
+                            return false;
+                        }
+                        if (!mvuData.stat_data) mvuData.stat_data = {};
+
+                        // 身份解析：v6 种族（普通人类/魔术师/从者/吸血鬼/自定义）→ FATE 身份类型
+                        const isCustomRaceNow = character.race === '__custom__' && customRace.enabled;
+                        const raceName = isCustomRaceNow ? (customRace.name || '自创') : (character.race || '普通人类');
+                        let identityType = '自创';
+                        let servantClass = '无';
+                        if (raceName === '从者') { identityType = '从者'; servantClass = 'Saber'; }
+                        else if (['普通人类', '魔术师', '人造人', '吸血鬼', '死徒'].includes(raceName)) { identityType = '御主'; }
+
+                        // 出生点（v6 fateSpawnPointData 结构：大陆/区域/场所）
+                        const spawnObj = currentSpawnPoints.value.find(sp => sp.name === selectedSpawnPoint.value);
+                        const spawnRegion = spawnObj?.区域 || '深山镇';
+                        const spawnPlace = spawnObj?.场所 || (raceName === '从者' ? '言峰教会' : '卫宫邸');
+
+                        // 剧本
+                        const script = fateScript.value || 'FSN-混合';
+                        const scriptMeta = FATE_SCRIPT_OPTIONS.find(o => o.id === script) || FATE_SCRIPT_OPTIONS[0];
+                        const edition = (script === 'FZ-上' || script === 'FZ-下') ? '第四次' : '第五次';
+
+                        // 从者：职阶技能/宝具留给玩家开局后自定（世界书英灵条目），此处只建框架
+                        const isServant = identityType === '从者';
+
+                        // 构建 FATE 人物结构（与 FATE 版 MVU_ZOD 对齐）
+                        mvuData.stat_data.人物 = {
+                            名称: character.name || '无名之人',
+                            身份类型: identityType,
+                            职阶: servantClass,
+                            种族: raceName,
+                            性别: character.gender,
+                            年龄: String(character.age || ''),
+                            外貌: '',
+                            背景设定: effectiveBackgroundDesc.value || '',
+                            魔术回路: isServant
+                                ? { 主回路: 0, 次回路: 0, 质量: '无', 状态: '休眠', 属性: '', 魔术刻印: '', 描述: '英灵不依赖魔术回路现界' }
+                                : { 主回路: raceName === '魔术师' ? 20 : (raceName === '人造人' ? 40 : (raceName === '吸血鬼' || raceName === '死徒' ? 30 : 0)), 次回路: 0, 质量: raceName === '普通人类' ? '无' : 'C', 状态: '正常', 属性: '地', 魔术刻印: '', 描述: '' },
+                            魔力: isServant
+                                ? { 当前值: 80, 上限值: 100, 状态: '平稳', 描述: '由御主供魔维持现界' }
+                                : { 当前值: 50, 上限值: 100, 状态: '平稳', 描述: '' },
+                            六维参数: {
+                                筋力: 'C', 耐久: 'C', 敏捷: 'C', 魔力: 'C', 幸运: 'C', 宝具: 'C'
+                            },
+                            灵基: isServant
+                                ? { 当前HP: 100, 上限HP: 100, 状态: '稳固', 永久缺损: '', 描述: '灵基完好' }
+                                : {},
+                            职阶技能: {},
+                            保有技能: {},
+                            宝具列表: isServant ? {} : {},
+                            魔术列表: !isServant ? {} : {},
+                            契约: isServant
+                                ? { 御主: '', 从者: character.name || '无名之人', 职阶: 'Saber', 真名: '隐藏', 契约状态: '缔结中', 供魔状况: '平稳', 令咒: { 剩余画数: 0, 使用记录: [] } }
+                                : { 御主: character.name || '无名之人', 从者: '', 职阶: '无', 真名: '无', 契约状态: '无', 供魔状况: '无', 令咒: { 剩余画数: 3, 使用记录: [] } },
+                            状态效果: {},
+                            金钱: 50000,
+                            背包: {},
+                            任务列表: {},
+                            羁绊列表: {},
+                            重大记忆: [],
+                            日常记忆: []
+                        };
+
+                        // 圣杯战争进度（FATE 版 schema）
+                        mvuData.stat_data.当前事件 = mvuData.stat_data.当前事件 || {};
+                        mvuData.stat_data.当前事件.圣杯战争 = { 召唤: '进行中' };
+                        mvuData.stat_data.当前事件.圣杯战争信息 = {
+                            届数: edition,
+                            阶段: '召唤',
+                            当前剧本: script,
+                            已死亡从者: [],
+                            已发生事件: {}
+                        };
+
+                        // 位置（城市/区域/场所）
+                        mvuData.stat_data.世界信息 = mvuData.stat_data.世界信息 || {};
+                        mvuData.stat_data.世界信息.年历 = (script === 'FZ-上' || script === 'FZ-下') ? '1994年2月2日' : '2004年2月2日';
+                        mvuData.stat_data.世界信息.世界剧情 = '事件A: ' + scriptMeta.name;
+                        mvuData.stat_data.世界信息.位置 = { 城市: '冬木市', 区域: spawnRegion, 场所: spawnPlace };
+
+                        // 系统配置
+                        mvuData.stat_data.系统配置 = mvuData.stat_data.系统配置 || {};
+                        mvuData.stat_data.系统配置.世界观 = 'FATE';
+                        mvuData.stat_data.系统配置.剧本 = script;
+                        mvuData.stat_data.系统配置.状态栏模式 = isServant ? '从者' : '默认';
+
+                        await mvu.replaceMvuData(mvuData, { type: 'message', message_id: 'latest' });
+                        return true;
+                    } catch (e) {
+                        console.error('[FATE开局] 保存失败:', e);
+                        alert('保存失败: ' + (e.message || e));
+                        return false;
+                    }
+                }
+
+                // ===== FATE 剧本 → 世界书时间线开关（复用 v6 thHttp 可靠通道） =====
+                async function applyFateScriptWorldbook(scriptName) {
+                    try {
+                        const entryName = (FATE_SCRIPT_OPTIONS.find(o => o.id === scriptName) || {}).entry || '';
+                        const timelinePrefix = '时间线-';
+                        const wbNames = await thHttpList();
+                        if (!wbNames || wbNames.length === 0) {
+                            console.warn('[FATE开局] 未找到世界书（HTTP通道不可用，请手动切换时间线）');
+                            return;
+                        }
+                        let targetName = wbNames.find(n => String(n).includes('沙盒') || String(n).includes('FateStay') || String(n).includes('FATE'));
+                        if (!targetName) targetName = wbNames[0];
+                        const wb = await thHttpGet(targetName);
+                        if (!wb || !wb.entries || !Array.isArray(wb.entries)) {
+                            console.warn('[FATE开局] 世界书结构异常');
+                            return;
+                        }
+                        let changed = false;
+                        wb.entries = wb.entries.map(entry => {
+                            const comment = String(entry.comment || entry.name || '');
+                            if (!comment.startsWith(timelinePrefix)) return entry;
+                            const target = !!entryName && (comment === entryName || comment.startsWith(entryName.replace(/\(多选一\)/, '')));
+                            if (entry.enabled !== target) {
+                                entry.enabled = target;
+                                changed = true;
+                            }
+                            return entry;
+                        });
+                        // 状态栏：从者 → 开「状态栏:从者」关「状态栏:默认」；御主反之
+                        const isServant = String(character.race || '') === '从者';
+                        wb.entries = wb.entries.map(entry => {
+                            const comment = String(entry.comment || entry.name || '');
+                            if (comment !== '状态栏:从者' && comment !== '状态栏:默认') return entry;
+                            const nextEnabled = comment === '状态栏:从者' ? isServant : !isServant;
+                            if (entry.enabled !== nextEnabled) {
+                                entry.enabled = nextEnabled;
+                                changed = true;
+                            }
+                            return entry;
+                        });
+                        if (changed) {
+                            await thHttpSave(targetName, wb);
+                            console.log('[FATE开局] 剧本世界书切换完成:', scriptName, entryName || '自定义（未关联时间线）');
+                        }
+                    } catch (e) {
+                        console.warn('[FATE开局] 世界书切换失败（可手动切换时间线）:', e);
+                    }
+                }
+
                 // 将角色数据写入MVU
                 const saveCharacterToMvu = async () => {
+                    // FATE 世界观：走独立的圣杯战争角色保存流程
+                    if (isFateWorldview.value) {
+                        return await saveFateCharacterToMvu();
+                    }
                     // 保存头像到浏览器缓存（确保状态栏能读取）
                     if (character.avatar) {
                         try { localStorage.setItem('rpg_player_avatar', character.avatar); } catch (err) { console.warn('[RPG开局] 头像存储失败:', err); }
@@ -18986,6 +19196,10 @@
                         if (await saveCharacterToMvu()) {
                             // 按开局类型统一处理世界书开关（含地图世界书）
                             await applyOpeningWorldbookRules();
+                            // FATE：切换剧本时间线世界书
+                            if (isFateWorldview.value) {
+                                await applyFateScriptWorldbook(fateScript.value);
+                            }
                             // 收集不能量化的配置，发送开局初始化指令
                             sendStartMessage();
                         }
@@ -19346,6 +19560,34 @@
                             初始状态: actualRaceNameMsg === '我于万物之中' ? '[SAN:100/100]' : '无',
                             说明: '以上项目已经由开局页直接写入MVU，正文不得再次创建同名资产、资源技能、熟练度、初始状态或说明型种族状态。'
                         };
+                    }
+
+                    if (isFateWorld) {
+                        const fateRaceNameMsg = character.race === '__custom__'
+                            ? (customRace.name || '自创')
+                            : (character.race || '普通人类');
+                        const fateScriptMeta = FATE_SCRIPT_OPTIONS.find(o => o.id === fateScript.value) || FATE_SCRIPT_OPTIONS[0];
+                        const isServantMsg = fateRaceNameMsg === '从者';
+                        config.角色信息.身份类型 = isServantMsg ? '从者' : (['普通人类', '魔术师', '人造人', '吸血鬼', '死徒'].includes(fateRaceNameMsg) ? '御主' : '自创');
+                        config.角色信息.职阶 = isServantMsg ? 'Saber（可依英灵设定修改）' : '无';
+                        config.圣杯战争 = {
+                            届数: (fateScript.value === 'FZ-上' || fateScript.value === 'FZ-下') ? '第四次' : '第五次',
+                            剧本: fateScript.value,
+                            剧本名称: fateScriptMeta.name,
+                            剧本说明: fateScriptMeta.desc,
+                            阶段: '召唤',
+                            身份说明: isServantMsg
+                                ? '你是被召唤现界的从者，正于召唤法阵中睁开双眼。灵基状态稳固，魔力由御主供给。真名未公开，宝具未解放；职阶技能与宝具可参照世界书「英灵」条目自定。'
+                                : '你是圣杯战争的御主（或参与者），已与从者缔结契约。令咒刻于手背（3画），圣杯战争即将开幕。'
+                        };
+                        const fateSpawnObj = currentSpawnPoints.value.find(sp => sp.name === selectedSpawnPoint.value);
+                        config.出生点 = {
+                            名称: selectedSpawnPoint.value || '卫宫邸',
+                            区域: fateSpawnObj?.区域 || '深山镇',
+                            场所: fateSpawnObj?.场所 || '卫宫邸',
+                            描述: fateSpawnObj?.desc || ''
+                        };
+                        config.型月铁律 = '遵守世界书「核心规则:世界观校验/过滤」：神秘隐匿、魔力守恒、令咒限制、宝具真名解放、力量体系隔离。禁止其他作品力量体系混入。';
                     }
 
                     const shouldIncludeBackgroundConfig = isSaoOpening
@@ -21531,7 +21773,7 @@ ${JSON.stringify(sourcePayload, null, 2)}`;
                     currentOpeningCombatValueModeLabel, currentOpeningCombatValueModeDescription,
                     difficultyOptionsForCurrentMode, currentDifficultyModeDescription, effectiveDifficultyKey,
                     setOpeningCombatValueMode, setOpeningDifficulty,
-                    isSaoOpeningSelected, isAmberWorldview, isJiuzhouWorldview, isDragonWorldview, isDragonHighSchoolOrigin, isBondSelectionDisabled, amberUnifiedStartLevels, amberCampTabs, amberRaceCampGroups, selectedAmberCamp, activeAmberCampGroup, saoLockedIdentityName, effectiveDifficultyLabel, effectiveIdentityCost, effectiveIdentityItems,
+                    isSaoOpeningSelected, isAmberWorldview, isJiuzhouWorldview, isDragonWorldview, isDragonHighSchoolOrigin, isFateWorldview, fateScript, FATE_SCRIPT_OPTIONS, isBondSelectionDisabled, amberUnifiedStartLevels, amberCampTabs, amberRaceCampGroups, selectedAmberCamp, activeAmberCampGroup, saoLockedIdentityName, effectiveDifficultyLabel, effectiveIdentityCost, effectiveIdentityItems,
                     effectiveStartingGoldAmount, effectiveStartingGoldLabel,
                     effectiveBackgroundName, effectiveBackgroundDesc, hasEffectiveBackgroundText,
                     starterShopState, starterShopAvailable, starterShopSelection, starterShopSelectedItems,
